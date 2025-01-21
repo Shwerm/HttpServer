@@ -1,25 +1,25 @@
 {
   "version": "0.2.0",
   "configurations": [
-    {
-      "name": "Debug HTTP Server",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${fileDirname}/${fileBasenameNoExtension}.exe", // Debug the compiled executable
-      "args": [],                            // Arguments for the program (if needed)
-      "stopAtEntry": false,                  // Start running immediately
-      "cwd": "${workspaceFolder}",           // Current working directory
-      "environment": [],                     // Environment variables
-      "externalConsole": false,              // Run within VS Code terminal
-      "MIMode": "gdb",                       // Use GDB for debugging
-      "miDebuggerPath": "C:\\MinGW\\bin\\gdb.exe", // Path to GDB
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
-    }
+      {
+          "name": "Debug HTTP Server",
+          "type": "cppdbg",
+          "request": "launch",
+          "program": "${workspaceFolder}/Backend/httpServer.exe",
+          "args": [],
+          "stopAtEntry": false,
+          "cwd": "${workspaceFolder}",
+          "environment": [],
+          "externalConsole": false,
+          "MIMode": "gdb",
+          "miDebuggerPath": "C:\\MinGW\\bin\\gdb.exe",
+          "setupCommands": [
+              {
+                  "description": "Enable pretty-printing for gdb",
+                  "text": "-enable-pretty-printing",
+                  "ignoreFailures": true
+              }
+          ]
+      }
   ]
 }
