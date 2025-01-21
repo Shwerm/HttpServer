@@ -17,7 +17,7 @@ char *readFile(const char *filename) {
     char filepath[512];
 
     // Ensure the path matches your structure
-    snprintf(filepath, sizeof(filepath), "Frontend/HTML/%s", filename);
+    snprintf(filepath, sizeof(filepath), "./Frontend/HTML/%s", filename);
 
     FILE *file = fopen(filepath, "r");
     if (!file) {
