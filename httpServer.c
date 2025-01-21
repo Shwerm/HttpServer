@@ -1,7 +1,4 @@
-/* 
-HTTP Server with User Authentication - Sam Camilleri
-Dependencies: signin.html, create_account.html
-*/
+/* HTTP Server with User Authentication */
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -42,7 +39,7 @@ void writeFile(const char *filename, const char *content) {
 // Returns: Pointer to the dynamically allocated content, or NULL on failure
 char *readFile(const char *filename) {
     char filepath[512];
-    snprintf(filepath, sizeof(filepath), "html/%s", filename);
+    snprintf(filepath, sizeof(filepath), "Frontend/HTML/%s", filename);
     FILE *file = fopen(filepath, "r");
     if (!file) return NULL;
     
@@ -120,12 +117,12 @@ void clientHandler(SOCKET clientSocket) {
     char *body;
     // Serve the sign-in page
     if (strstr(buffer, "GET / ") || strstr(buffer, "GET /signin")) {
-        body = readFile("signin.html");
+        body = readFile("SignInPage/signin.html");
         if (!body) body = "<html><body><h1>Sign-In Page Not Found</h1></body></html>";
     } 
     // Serve the account creation page
     else if (strstr(buffer, "GET /create-account")) {
-        body = readFile("create_account.html");
+        body = readFile("AccountCreationPage/create_account.html");
         if (!body) body = "<html><body><h1>Account Creation Page Not Found</h1></body></html>";
     } 
     // Handle account creation via POST
