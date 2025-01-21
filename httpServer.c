@@ -114,11 +114,6 @@ void clientHandler(SOCKET clientSocket) {
         "\r\n"
         "%s";
 
-    const char *redirectTemplate =
-        "HTTP/1.1 302 Found\r\n"
-        "Location: /signin\r\n"
-        "\r\n";
-
     char *body;
     // Serve the sign-in page
     if (strstr(buffer, "GET / ") || strstr(buffer, "GET /signin")) {
@@ -147,7 +142,17 @@ void clientHandler(SOCKET clientSocket) {
 
             if (strlen(username) > 0 && strlen(password) > 0) {
                 if (usernameExists(username)) {
-                    body = "<html><body><h1>Username already exists. Please choose another.</h1></body></html>";
+                    body = "<html><body>\n"
+                           "<h1>Create Account</h1>\n"
+                           "<form method=\"POST\" action=\"/create-account\">\n"
+                           "<label for=\"username\">Username:</label>\n"
+                           "<input type=\"text\" id=\"username\" name=\"username\"><br>\n"
+                           "<label for=\"password\">Password:</label>\n"
+                           "<input type=\"password\" id=\"password\" name=\"password\"><br>\n"
+                           "<p style=\"color:red;\">Username already exists. Please choose another.</p>\n"
+                           "<button type=\"submit\">Create Account</button>\n"
+                           "</form>\n"
+                           "</body></html>";
                 } else {
                     int userID = generateUniqueID();
                     FILE *users = fopen("users.txt", "a");
@@ -156,6 +161,10 @@ void clientHandler(SOCKET clientSocket) {
                         fclose(users);
                     }
                     // Redirect to the sign-in page after account creation
+                    const char *redirectTemplate =
+                        "HTTP/1.1 302 Found\r\n"
+                        "Location: /signin\r\n"
+                        "\r\n";
                     send(clientSocket, redirectTemplate, strlen(redirectTemplate), 0);
                     closesocket(clientSocket);
                     return;
