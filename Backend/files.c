@@ -1,23 +1,14 @@
-/* 
-HTTP Server with User Authentication - Sam Camilleri
-Entry point
-Dependencies: files.h
-*/
 #include "files.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
 // Utility function to read content from a file
-// Parameters:
-// - filename: Name of the file to read
-// Returns: Pointer to the dynamically allocated content, or NULL on failure
 char *readFile(const char *filename) {
     char filepath[512];
 
     // Ensure the path matches your structure
-    snprintf(filepath, sizeof(filepath), "./Frontend/HTML/%s", filename);
+    snprintf(filepath, sizeof(filepath), "./Frontend/HTML/%s", filename); // Ensure "./" is added to denote current directory
 
     FILE *file = fopen(filepath, "r");
     if (!file) {
@@ -38,11 +29,7 @@ char *readFile(const char *filename) {
     return content;
 }
 
-
 // Utility function to write content to a file
-// Parameters:
-// - filename: Name of the file to write
-// - content: Content to write to the file
 void writeFile(const char *filename, const char *content) {
     FILE *file = fopen(filename, "w");
     if (file) {
