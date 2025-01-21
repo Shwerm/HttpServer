@@ -92,25 +92,52 @@ void clientHandler(SOCKET clientSocket) {
     } 
     // Handle account creation via POST
     else if (strstr(buffer, "POST /create-account")) {
-        char username[256], password[256];
-        sscanf(buffer, "username=%255[^&]&password=%255s", username, password);
-        FILE *users = fopen("users.txt", "a");
-        if (users) {
-            fprintf(users, "%s:%s\n", username, password);
-            fclose(users);
+        char *usernameStart = strstr(buffer, "username=");
+        char *passwordStart = strstr(buffer, "password=");
+
+        char username[256] = {0}, password[256] = {0};
+
+        if (usernameStart && passwordStart) {
+            sscanf(usernameStart, "username=%255[^&]", username);
+            sscanf(passwordStart, "password=%255[^\r\n]", password);
+
+            // Remove newline characters from inputs
+            strtok(username, "\r\n");
+            strtok(password, "\r\n");
+
+            if (strlen(username) > 0 && strlen(password) > 0) {
+                FILE *users = fopen("users.txt", "a");
+                if (users) {
+                    fprintf(users, "%s:%s\n", username, password);
+                    fclose(users);
+                }
+                // Redirect to the sign-in page after account creation
+                send(clientSocket, redirectTemplate, strlen(redirectTemplate), 0);
+                closesocket(clientSocket);
+                return;
+            }
         }
-        // Redirect to the sign-in page after account creation
-        send(clientSocket, redirectTemplate, strlen(redirectTemplate), 0);
-        closesocket(clientSocket);
-        return;
+        body = "<html><body><h1>Invalid Account Data</h1></body></html>";
     } 
     // Handle sign-in via POST
     else if (strstr(buffer, "POST /signin")) {
-        char username[256], password[256], line[512];
-        sscanf(buffer, "username=%255[^&]&password=%255s", username, password);
+        char *usernameStart = strstr(buffer, "username=");
+        char *passwordStart = strstr(buffer, "password=");
+
+        char username[256] = {0}, password[256] = {0};
+        if (usernameStart && passwordStart) {
+            sscanf(usernameStart, "username=%255[^&]", username);
+            sscanf(passwordStart, "password=%255[^\r\n]", password);
+
+            // Remove newline characters from inputs
+            strtok(username, "\r\n");
+            strtok(password, "\r\n");
+        }
+
         FILE *users = fopen("users.txt", "r");
         int authenticated = 0;
         if (users) {
+            char line[512];
             while (fgets(line, sizeof(line), users)) {
                 char fileUser[256], filePass[256];
                 sscanf(line, "%255[^:]:%255s", fileUser, filePass);
