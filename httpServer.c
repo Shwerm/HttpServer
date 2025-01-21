@@ -1,4 +1,7 @@
-/* HTTP Server with User Authentication */
+/* 
+HTTP Server with User Authentication - Sam Camilleri
+Dependencies: signin.html, create_account.html
+*/
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
