@@ -42,21 +42,23 @@ void writeFile(const char *filename, const char *content)
 // Returns: Pointer to the dynamically allocated content, or NULL on failure
 char *readFile(const char *filename) 
 {
-    FILE *file = fopen(filename, "r");
+    char filepath[512];
+    snprintf(filepath, sizeof(filepath), "HTML/%s", filename);
+    FILE *file = fopen(filepath, "r");
     if (!file) return NULL;
-    
+
     fseek(file, 0, SEEK_END);
     long length = ftell(file);
     rewind(file);
     char *content = malloc(length + 1);
-    if (content) 
-    {
+    if (content) {
         fread(content, 1, length, file);
         content[length] = '\0';
     }
     fclose(file);
     return content;
 }
+
 
 // Handles incoming client connections
 // Parameters:
