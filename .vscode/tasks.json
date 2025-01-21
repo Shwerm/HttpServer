@@ -4,14 +4,11 @@
         {
             "label": "Build HTTP Server",
             "type": "shell",
-            "command": "gcc",
-            "args": [
-                "-g",
-                "Backend/*.c",
-                "-o", "Backend/httpServer.exe",
-                "-lws2_32"
-            ],
-            "group": { "kind": "build", "isDefault": true },
+            "command": "${workspaceFolder}/build.bat",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "problemMatcher": ["$gcc"],
             "detail": "Build task for the HTTP server project"
         }

@@ -5,7 +5,7 @@
           "name": "Debug HTTP Server",
           "type": "cppdbg",
           "request": "launch",
-          "program": "${workspaceFolder}/Backend/httpServer.exe",
+          "program": "${workspaceFolder}/httpServer.exe",
           "args": [],
           "stopAtEntry": false,
           "cwd": "${workspaceFolder}",
