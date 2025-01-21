@@ -2,17 +2,20 @@
 HTTP Server with User Authentication - Sam Camilleri
 File reader Header
 */
-#ifndef HANDLERS_H
-#define HANDLERS_H
+#ifndef FILES_H
+#define FILES_H
 
-#include <winsock2.h>
-
-// Maximum buffer size for request handling
-#define MAX_BUFFER_SIZE 4096
-
-// Handles incoming client connections
+// Reads content from a file
 // Parameters:
-// - clientSocket: Socket representing the client connection
-void clientHandler(SOCKET clientSocket);
+// - filename: Name of the file to read
+// Returns: Pointer to the dynamically allocated content, or NULL on failure
+char *readFile(const char *filename);
 
-#endif // HANDLERS_H
+// Writes content to a file
+// Parameters:
+// - filename: Name of the file to write
+// - content: Content to write to the file
+void writeFile(const char *filename, const char *content);
+
+#endif // FILES_H
+
