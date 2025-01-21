@@ -1,6 +1,6 @@
 /* 
 HTTP Server with User Authentication - Sam Camilleri
-Entry point
+User Authenticater
 Dependencies: auth.h
 */
 

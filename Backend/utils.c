@@ -1,6 +1,6 @@
 /* 
 HTTP Server with User Authentication - Sam Camilleri
-Entry point
+Utilities Class
 Dependencies: utils.h
 */
 #include "utils.h"
