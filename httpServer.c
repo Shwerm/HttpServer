@@ -16,7 +16,8 @@
 volatile int keepRunning = 1; // Global flag for server shutdown
 
 // Signal handler for graceful shutdown
-void handleSignal(int signal) {
+void handleSignal(int signal) 
+{
     printf("\nReceived termination signal. Shutting down server...\n");
     keepRunning = 0;
 }
@@ -25,9 +26,11 @@ void handleSignal(int signal) {
 // Parameters:
 // - filename: Name of the file to write
 // - content: Content to write to the file
-void writeFile(const char *filename, const char *content) {
+void writeFile(const char *filename, const char *content) 
+{
     FILE *file = fopen(filename, "w");
-    if (file) {
+    if (file) 
+    {
         fprintf(file, "%s", content);
         fclose(file);
     }
@@ -37,7 +40,8 @@ void writeFile(const char *filename, const char *content) {
 // Parameters:
 // - filename: Name of the file to read
 // Returns: Pointer to the dynamically allocated content, or NULL on failure
-char *readFile(const char *filename) {
+char *readFile(const char *filename) 
+{
     FILE *file = fopen(filename, "r");
     if (!file) return NULL;
     
@@ -45,7 +49,8 @@ char *readFile(const char *filename) {
     long length = ftell(file);
     rewind(file);
     char *content = malloc(length + 1);
-    if (content) {
+    if (content) 
+    {
         fread(content, 1, length, file);
         content[length] = '\0';
     }
@@ -56,10 +61,12 @@ char *readFile(const char *filename) {
 // Handles incoming client connections
 // Parameters:
 // - clientSocket: Socket representing the client connection
-void clientHandler(SOCKET clientSocket) {
+void clientHandler(SOCKET clientSocket) 
+{
     char buffer[MAX_BUFFER_SIZE];
     int bytesReceived = recv(clientSocket, buffer, MAX_BUFFER_SIZE - 1, 0);
-    if (bytesReceived == SOCKET_ERROR) {
+    if (bytesReceived == SOCKET_ERROR) 
+    {
         closesocket(clientSocket);
         return;
     }
@@ -74,17 +81,20 @@ void clientHandler(SOCKET clientSocket) {
 
     char *body;
     // Serve the sign-in page
-    if (strstr(buffer, "GET / ") || strstr(buffer, "GET /signin")) {
+    if (strstr(buffer, "GET / ") || strstr(buffer, "GET /signin")) 
+    {
         body = readFile("signin.html");
         if (!body) body = "<html><body><h1>Sign-In Page Not Found</h1></body></html>";
     } 
     // Serve the account creation page
-    else if (strstr(buffer, "GET /create-account")) {
+    else if (strstr(buffer, "GET /create-account")) 
+    {
         body = readFile("create_account.html");
         if (!body) body = "<html><body><h1>Account Creation Page Not Found</h1></body></html>";
     } 
     // Handle account creation via POST
-    else if (strstr(buffer, "POST /create-account")) {
+    else if (strstr(buffer, "POST /create-account")) 
+    {
         char username[256], password[256];
         sscanf(buffer, "username=%255[^&]&password=%255s", username, password);
         FILE *users = fopen("users.txt", "a");
@@ -95,25 +105,31 @@ void clientHandler(SOCKET clientSocket) {
         body = "<html><body><h1>Account Created Successfully</h1></body></html>";
     } 
     // Handle sign-in via POST
-    else if (strstr(buffer, "POST /signin")) {
+    else if (strstr(buffer, "POST /signin")) 
+    {
         char username[256], password[256], line[512];
         sscanf(buffer, "username=%255[^&]&password=%255s", username, password);
         FILE *users = fopen("users.txt", "r");
         int authenticated = 0;
-        if (users) {
-            while (fgets(line, sizeof(line), users)) {
+        if (users) 
+        {
+            while (fgets(line, sizeof(line), users)) 
+            {
                 char fileUser[256], filePass[256];
                 sscanf(line, "%255[^:]:%255s", fileUser, filePass);
-                if (strcmp(username, fileUser) == 0 && strcmp(password, filePass) == 0) {
+                if (strcmp(username, fileUser) == 0 && strcmp(password, filePass) == 0) 
+                {
                     authenticated = 1;
                     break;
                 }
             }
             fclose(users);
         }
-        if (authenticated) {
+        if (authenticated) 
+        {
             body = "<html><body><h1>Authentication Successful</h1></body></html>";
-        } else {
+        } else 
+        {
             body = "<html><body><h1>Authentication Failed</h1></body></html>";
         }
     } 
@@ -132,7 +148,8 @@ void clientHandler(SOCKET clientSocket) {
 }
 
 // Entry point for the HTTP server
-int main() {
+int main() 
+{
     WSADATA wsaData;
     SOCKET server_fd, clientSocket;
     struct sockaddr_in address;
@@ -142,13 +159,15 @@ int main() {
     signal(SIGINT, handleSignal);
 
     // Initialize Winsock
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
+    {
         return 1;
     }
 
     // Create a socket
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_fd == INVALID_SOCKET) {
+    if (server_fd == INVALID_SOCKET) 
+    {
         WSACleanup();
         return 1;
     }
@@ -158,7 +177,8 @@ int main() {
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(DEFAULT_PORT);
 
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) == SOCKET_ERROR) {
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) == SOCKET_ERROR) 
+    {
         closesocket(server_fd);
         WSACleanup();
         return 1;
@@ -170,7 +190,8 @@ int main() {
     printf("Server is running on port %d. Press Ctrl+C to stop.\n", DEFAULT_PORT);
 
     // Accept and handle client connections
-    while (keepRunning) {
+    while (keepRunning) 
+    {
         clientSocket = accept(server_fd, (struct sockaddr *)&address, &addrlen);
         if (clientSocket == INVALID_SOCKET) continue;
         clientHandler(clientSocket);
