@@ -55,6 +55,46 @@ char *readFile(const char *filename) {
     return content;
 }
 
+// Checks if a username already exists in the database
+// Parameters:
+// - username: The username to check
+// Returns: 1 if the username exists, 0 otherwise
+int usernameExists(const char *username) {
+    FILE *users = fopen("users.txt", "r");
+    if (!users) return 0;
+
+    char line[512], fileUser[256];
+    while (fgets(line, sizeof(line), users)) {
+        sscanf(line, "%255[^:]:", fileUser);
+        if (strcmp(username, fileUser) == 0) {
+            fclose(users);
+            return 1;
+        }
+    }
+
+    fclose(users);
+    return 0;
+}
+
+// Generates a unique identifier for a new user
+// Returns: The next available unique identifier
+int generateUniqueID() {
+    FILE *users = fopen("users.txt", "r");
+    if (!users) return 1; // Start IDs from 1 if the file doesn't exist
+
+    char line[512];
+    int maxID = 0, currentID;
+    while (fgets(line, sizeof(line), users)) {
+        sscanf(line, "%*[^:]:%*[^:]:%d", &currentID);
+        if (currentID > maxID) {
+            maxID = currentID;
+        }
+    }
+
+    fclose(users);
+    return maxID + 1;
+}
+
 // Handles incoming client connections
 // Parameters:
 // - clientSocket: Socket representing the client connection
@@ -106,18 +146,26 @@ void clientHandler(SOCKET clientSocket) {
             strtok(password, "\r\n");
 
             if (strlen(username) > 0 && strlen(password) > 0) {
-                FILE *users = fopen("users.txt", "a");
-                if (users) {
-                    fprintf(users, "%s:%s\n", username, password);
-                    fclose(users);
+                if (usernameExists(username)) {
+                    body = "<html><body><h1>Username already exists. Please choose another.</h1></body></html>";
+                } else {
+                    int userID = generateUniqueID();
+                    FILE *users = fopen("users.txt", "a");
+                    if (users) {
+                        fprintf(users, "%s:%s:%d\n", username, password, userID);
+                        fclose(users);
+                    }
+                    // Redirect to the sign-in page after account creation
+                    send(clientSocket, redirectTemplate, strlen(redirectTemplate), 0);
+                    closesocket(clientSocket);
+                    return;
                 }
-                // Redirect to the sign-in page after account creation
-                send(clientSocket, redirectTemplate, strlen(redirectTemplate), 0);
-                closesocket(clientSocket);
-                return;
+            } else {
+                body = "<html><body><h1>Invalid Account Data</h1></body></html>";
             }
+        } else {
+            body = "<html><body><h1>Invalid Account Data</h1></body></html>";
         }
-        body = "<html><body><h1>Invalid Account Data</h1></body></html>";
     } 
     // Handle sign-in via POST
     else if (strstr(buffer, "POST /signin")) {
@@ -140,7 +188,7 @@ void clientHandler(SOCKET clientSocket) {
             char line[512];
             while (fgets(line, sizeof(line), users)) {
                 char fileUser[256], filePass[256];
-                sscanf(line, "%255[^:]:%255s", fileUser, filePass);
+                sscanf(line, "%255[^:]:%255[^:]:%*d", fileUser, filePass);
                 if (strcmp(username, fileUser) == 0 && strcmp(password, filePass) == 0) {
                     authenticated = 1;
                     break;
