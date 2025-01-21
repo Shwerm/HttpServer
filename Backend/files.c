@@ -15,10 +15,17 @@ Dependencies: files.h
 // Returns: Pointer to the dynamically allocated content, or NULL on failure
 char *readFile(const char *filename) {
     char filepath[512];
+
+    // Ensure the path matches your structure
     snprintf(filepath, sizeof(filepath), "Frontend/HTML/%s", filename);
+
     FILE *file = fopen(filepath, "r");
-    if (!file) return NULL;
-    
+    if (!file) {
+        // Log the missing file for debugging
+        fprintf(stderr, "File not found: %s\n", filepath);
+        return NULL;
+    }
+
     fseek(file, 0, SEEK_END);
     long length = ftell(file);
     rewind(file);
@@ -30,6 +37,7 @@ char *readFile(const char *filename) {
     fclose(file);
     return content;
 }
+
 
 // Utility function to write content to a file
 // Parameters:
