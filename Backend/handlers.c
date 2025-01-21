@@ -1,9 +1,3 @@
-/* 
-HTTP Server with User Authentication - Sam Camilleri
-Entry point
-Dependencies: handlers.h, files.h, auth.h, utils.h
-*/
-
 #include "handlers.h"
 #include "files.h"
 #include "auth.h"
@@ -70,7 +64,6 @@ static void handlePostRequest(SOCKET clientSocket, const char *path, const char 
             sscanf(usernameStart, "username=%255[^&]", username);
             sscanf(passwordStart, "password=%255[^\r\n]", password);
 
-            // Clean input
             strtok(username, "\r\n");
             strtok(password, "\r\n");
 
@@ -92,7 +85,6 @@ static void handlePostRequest(SOCKET clientSocket, const char *path, const char 
                         fclose(users);
                     }
 
-                    // Redirect to sign-in page
                     const char *redirectTemplate = "HTTP/1.1 302 Found\r\nLocation: /signin\r\n\r\n";
                     send(clientSocket, redirectTemplate, strlen(redirectTemplate), 0);
                 }
@@ -167,7 +159,7 @@ void clientHandler(SOCKET clientSocket) {
     } else if (strcmp(method, "POST") == 0) {
         char *body = strstr(buffer, "\r\n\r\n");
         if (body) {
-            body += 4; // Skip the "\r\n\r\n"
+            body += 4;
             handlePostRequest(clientSocket, path, body);
         } else {
             sendError(clientSocket, "No body found in POST request.");
@@ -178,4 +170,3 @@ void clientHandler(SOCKET clientSocket) {
 
     closesocket(clientSocket);
 }
-
